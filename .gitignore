@@ -1,0 +1,52 @@
+# .gitignore for ASP.NET Core Projects
+
+# Visual Studio and Rider
+.vs/
+.idea/
+
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Logs
+logs/
+*.log
+
+# Dependencies
+node_modules/
+bower_components/
+
+# Environment variables
+.env
+
+# macOS and Linux files
+.DS_Store
+*.swp
+
+# ASP.NET Core Configuration
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# EF Core Migrations
+Migrations/
+
+# Publish output
+wwwroot/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Resharper and other IDE specific files
+*.DotSettings.user
+
+# NPM and Yarn locks (if applicable)
+yarn.lock
+package-lock.json

@@ -11,8 +11,6 @@
         <input matInput formControlName="branch" required />
       </mat-form-field>
 
-      <mat-checkbox formControlName="isCancelled">Is Cancelled</mat-checkbox>
-
       <button mat-raised-button color="primary" (click)="addSaleItem()">Add Item</button>
 
       <div>
@@ -30,11 +28,6 @@
           <ng-container matColumnDef="unitPrice">
             <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
             <mat-cell *matCellDef="let item">{{ item.value.unitPrice }}</mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="discount">
-            <mat-header-cell *matHeaderCellDef> Discount </mat-header-cell>
-            <mat-cell *matCellDef="let item">{{ item.value.discount }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="actions">

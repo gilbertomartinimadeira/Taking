@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SaleItemModalComponent } from '../../sale-item-modal/sale-item-modal.component';
@@ -23,7 +23,7 @@ import { MatCardModule } from '@angular/material/card';
     MatButtonModule,
     MatCheckboxModule,
     MatDialogModule,
-    MatCardModule,   
+    MatCardModule,
     MatInputModule,
     MatFormFieldModule,
     MatCheckboxModule,
@@ -33,13 +33,14 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class CreateSaleComponent {
   saleForm: FormGroup;
-  displayedColumns: string[] = ['product', 'quantity', 'unitPrice', 'discount', 'actions']; // Column headers
+  displayedColumns: string[] = ['product', 'quantity', 'unitPrice', 'actions'];
 
   constructor(
     private fb: FormBuilder,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private cdRef: ChangeDetectorRef  // Inject ChangeDetectorRef
   ) {
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
 
     this.saleForm = this.fb.group({
       customer: ['', Validators.required],
@@ -47,7 +48,7 @@ export class CreateSaleComponent {
       branch: ['', Validators.required],
       date: [currentDate], // Set current date as default
       isCancelled: [false],
-      items: this.fb.array([])
+      items: this.fb.array([]),
     });
   }
 
@@ -55,11 +56,13 @@ export class CreateSaleComponent {
     return this.saleForm.get('items') as FormArray;
   }
 
+  // Add Sale Item to FormArray after Save Item modal
   addSaleItem(): void {
     const dialogRef = this.dialog.open(SaleItemModalComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        // Add Sale Item to FormArray
         const itemFormGroup = this.fb.group({
           product: [result.product, Validators.required],
           quantity: [result.quantity, [Validators.required, Validators.min(1)]],
@@ -69,6 +72,8 @@ export class CreateSaleComponent {
 
         this.items.push(itemFormGroup); // Add the new item to the items array
         this.updateTotalAmount(); // Update the total amount whenever a new item is added
+
+        this.cdRef.markForCheck(); // Manually trigger change detection to update the table
       }
     });
   }
@@ -78,6 +83,7 @@ export class CreateSaleComponent {
     if (index >= 0) {
       this.items.removeAt(index); // Remove the item from the FormArray
       this.updateTotalAmount(); // Update the total amount after item removal
+      this.cdRef.markForCheck(); // Trigger change detection to update the table
     }
   }
 
@@ -93,7 +99,7 @@ export class CreateSaleComponent {
 
   onSubmit(): void {
     if (this.saleForm.valid) {
-      console.log(this.saleForm.value);
+      console.log(this.saleForm.value); // Submit sale
     }
   }
 

@@ -1,12 +1,14 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using AutoMapper;
@@ -19,7 +21,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 [Route("api/[controller]")]
 public class SalesController(IMediator mediator, IMapper mapper) : BaseController
 {
-
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -41,8 +42,8 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
             Data = mapper.Map<CreateSaleResponse>(response)
         });
     }
-    [HttpGet]
-    public async Task<IActionResult> GetSaleById([FromQuery]GetSaleRequest request, CancellationToken cancellationToken)
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> GetSaleById([FromQuery] GetSaleRequest request, CancellationToken cancellationToken)
     {
         var validator = new GetSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -91,5 +92,23 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
         var result = await mediator.Send(command, cancellationToken);
 
         return result ? Ok() : StatusCode(500,$"Error trying to cancel the sale #{request.Id}");
+    }
+
+    [HttpGet()]
+    public async Task<IActionResult> ListSales([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new ListSalesRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var query = mapper.Map<ListSalesQuery>(request);
+        var result = await mediator.Send(query, cancellationToken);
+
+        if (result == null)
+            return NotFound(); 
+
+        return Ok(result);
     }
 }

@@ -1,0 +1,16 @@
+.sales-card {
+  margin: 20px;
+}
+
+.sales-table {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+mat-table {
+  width: 100%;
+}
+
+mat-header-cell, mat-cell {
+  padding: 10px;
+}

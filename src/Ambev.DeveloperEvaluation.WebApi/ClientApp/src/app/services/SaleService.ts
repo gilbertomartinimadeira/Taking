@@ -8,7 +8,6 @@ import { Sale } from '../models/Sale';
 })
 export class SaleService {
   private apiUrl = 'your-api-endpoint';
-
   constructor(private http: HttpClient) { }
 
   createSale(sale: Sale): Observable<Sale> {

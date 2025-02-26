@@ -10,7 +10,7 @@ public class SaleItem
     public decimal Discount { get; private set; }  
     public decimal Total { get; private set; }     
 
-    private SaleItem() { } // Required for EF Core
+    public SaleItem() { } // Required for EF Core
 
     public SaleItem(Guid saleId, string product, int quantity, decimal unitPrice)
     {

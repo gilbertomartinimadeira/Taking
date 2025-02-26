@@ -5,10 +5,10 @@
         public Guid Id { get; private set; }
         public DateTime Date { get; private set; }
         public string Customer { get; private set; }
-        public decimal TotalAmount { get; private set; }
+        public decimal TotalAmount { get ; private set; }
         public string Branch { get; private set; }
         public bool IsCancelled { get; private set; }
-        private readonly List<SaleItem> _items = [];
+        private readonly List<SaleItem> _items = new List<SaleItem>();
 
         public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
 
@@ -26,10 +26,7 @@
 
         private void AddItems(IEnumerable<SaleItem> items)
         {
-            foreach (var item in items)
-            {
-                AddItem(item);
-            }
+            foreach (var item in items) AddItem(item);           
         }
 
         public void AddItem(SaleItem item)
@@ -56,12 +53,12 @@
 
         private void CalculateTotal()
         {
-            TotalAmount = _items.Sum(i => i.Total);
+            TotalAmount = Items.Sum(i => i.Total);
         }
 
         public void Update(string? customer, string? branch, List<SaleItem> updatedItems)
         {
-            throw new NotImplementedException();
+            AddItems(updatedItems);
         }
     }
 

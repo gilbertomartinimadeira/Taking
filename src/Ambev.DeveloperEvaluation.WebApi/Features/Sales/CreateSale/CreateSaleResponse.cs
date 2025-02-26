@@ -1,7 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+
+public class CreateSaleResponse
 {
-    public class CreateSaleResponse
-    {
-        public Guid SaleId { get; set; }
-    }
+    public Guid Id { get; set; }
 }

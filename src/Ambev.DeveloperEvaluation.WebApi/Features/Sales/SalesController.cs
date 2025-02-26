@@ -1,7 +1,13 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using AutoMapper;
 using MediatR;
@@ -17,7 +23,7 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Sale>> CreateSale([FromBody]CreateSaleRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateSale([FromBody]CreateSaleRequest request, CancellationToken cancellationToken)
     {
         var validator = new CreateSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -35,22 +41,55 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
             Data = mapper.Map<CreateSaleResponse>(response)
         });
     }
+    [HttpGet]
+    public async Task<IActionResult> GetSaleById([FromQuery]GetSaleRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new GetSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-    //[HttpPut("{saleId}")]
-    //public async Task<ActionResult<Sale>> UpdateSale(Guid saleId, [FromBody] Sale updatedSale)
-    //{
-    //    var command = new UpdateSaleCommand(saleId, updatedSale);
-    //    var updated = await _mediator.Send(command);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
 
-    //    return Ok(updated);
-    //}
+        var query = mapper.Map<GetSaleQuery>(request);
+        var result = await mediator.Send(query, cancellationToken);
 
-    //[HttpDelete("{saleId}")]
-    //public async Task<ActionResult> CancelSale(Guid saleId)
-    //{
-    //    var command = new CancelSaleCommand(saleId);
-    //    var result = await _mediator.Send(command);
+        var response = mapper.Map<GetSaleResponse>(result);
 
-    //    return result ? Ok() : NotFound();
-    //}
+        if(response is not null)
+        {
+            return Ok(response);
+        }
+        return NotFound(response);
+
+    }
+
+    [HttpPut("{saleId}")]
+    public async Task<ActionResult<Sale>> UpdateSale(Guid saleId, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new UpdateSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = mapper.Map<UpdateSaleCommand>(request);
+        var updated = await mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> CancelSale([FromBody]CancelSaleRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new CancelSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+        var command = mapper.Map<CancelSaleCommand>(request);
+        
+        var result = await mediator.Send(command, cancellationToken);
+
+        return result ? Ok() : StatusCode(500,$"Error trying to cancel the sale #{request.Id}");
+    }
 }

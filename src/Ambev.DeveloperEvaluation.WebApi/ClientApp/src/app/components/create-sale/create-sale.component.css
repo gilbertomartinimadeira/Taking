@@ -1,0 +1,6 @@
+.sale-card {
+  width: 80%;
+  max-width: 600px; /* You can adjust the width according to your preference */
+  margin: 20px auto; /* Center the card horizontally */
+  padding: 20px;
+}

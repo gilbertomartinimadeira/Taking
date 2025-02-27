@@ -23,7 +23,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 public class SalesController(IMediator mediator, IMapper mapper) : BaseController
 {
     [HttpPost()]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSale([FromBody]CreateSaleRequest request, CancellationToken cancellationToken)
     {
@@ -62,7 +62,7 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
         {
             return Ok(response);
         }
-        return NotFound(response);
+        return NotFound();
 
     }
 

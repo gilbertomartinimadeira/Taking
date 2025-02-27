@@ -12,6 +12,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,8 +44,9 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
         });
     }
     [HttpGet("{id:Guid}")]
-    public async Task<IActionResult> GetSaleById([FromQuery] GetSaleRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSaleById(Guid id, CancellationToken cancellationToken)
     {
+        var request = new GetSaleRequest() { Id = id };
         var validator = new GetSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 

@@ -9,6 +9,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Mappings
         public GetSaleRequestProfile()
         {
             CreateMap<GetSaleRequest, GetSaleQuery>();
+            CreateMap<GetSaleResult, GetSaleResponse>();
         }
     }
 }

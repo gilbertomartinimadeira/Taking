@@ -7,5 +7,5 @@ public class SaleDTO
     public decimal TotalAmount { get; set; }
     public string Branch { get;  set; }
     public bool IsCancelled { get; set; }
-    private readonly List<SaleItemDTO> _items = [];
+    public List<SaleItemDTO> Items { get; set; }
 }

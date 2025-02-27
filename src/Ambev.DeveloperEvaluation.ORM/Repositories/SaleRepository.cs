@@ -33,11 +33,12 @@ public class SaleRepository(DefaultContext context) : ISaleRepository
     public async Task SaveSale(Sale sale)
     {
         await context.Sales.AddAsync(sale);
+        await context.SaveChangesAsync();
     }
 
-    public async Task UpdateSale(Guid id, Sale sale)
+    public async Task UpdateSale(Sale sale)
     {
-        var saleFromDb = await context.Sales.FirstOrDefaultAsync(s => s.Id.Equals(id));
+        var saleFromDb = await context.Sales.FirstOrDefaultAsync(s => s.Id.Equals(sale.Id));
 
         if (saleFromDb != null) {
             saleFromDb = sale;

@@ -49,9 +49,9 @@ public class InMemorySaleRepository : ISaleRepository
         return Task.CompletedTask;
     }
 
-    public Task UpdateSale(Guid id, Sale sale)
+    public Task UpdateSale(Sale sale)
     {
-        var existingSale = _sales.FirstOrDefault(s => s.Id == id);
+        var existingSale = _sales.FirstOrDefault(s => s.Id == sale.Id);
 
         if (existingSale != null)
         {

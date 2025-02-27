@@ -39,11 +39,7 @@ export class ListSalesComponent implements OnInit{
   displayedColumns: string[] = ['customer', 'branch', 'date', 'totalAmount', 'actions'];
 
   deleteSale(sale: Sale): void {
-    
-    console.log('Delete sale:', sale);
-    debugger;
-    
-    
+    console.log('Delete sale:', sale);         
     this.saleService.cancelSale(sale.id).subscribe(result => {
       this.showNotification("Sale removed successfully!", "success");
       this.sales = this.sales.filter(s => s.id !== sale.id);
@@ -51,7 +47,7 @@ export class ListSalesComponent implements OnInit{
   }
 
   editSale(sale: Sale): void {
-    console.log(sale);
+    //todo: finish the editing 
   }
 
   showNotification(message: string, type: "success" | "error"): void {

@@ -21,7 +21,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 [Route("api/[controller]")]
 public class SalesController(IMediator mediator, IMapper mapper) : BaseController
 {
-    [HttpPost]
+    [HttpPost()]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSale([FromBody]CreateSaleRequest request, CancellationToken cancellationToken)
@@ -64,8 +64,8 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
 
     }
 
-    [HttpPut("{saleId}")]
-    public async Task<ActionResult<Sale>> UpdateSale(Guid saleId, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    [HttpPut()]
+    public async Task<ActionResult<Sale>> UpdateSale([FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
     {
         var validator = new UpdateSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -74,7 +74,7 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
             return BadRequest(validationResult.Errors);
 
         var command = mapper.Map<UpdateSaleCommand>(request);
-        var updated = await mediator.Send(command, cancellationToken);
+        await mediator.Send(command, cancellationToken);
 
         return NoContent();
     }

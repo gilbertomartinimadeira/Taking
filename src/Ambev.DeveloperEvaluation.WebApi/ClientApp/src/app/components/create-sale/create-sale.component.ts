@@ -10,6 +10,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { SaleService } from '../../services/SaleService';
 
 @Component({
   selector: 'app-create-sale',
@@ -28,7 +31,8 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
   ]
 })
 export class CreateSaleComponent {
@@ -38,16 +42,15 @@ export class CreateSaleComponent {
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
-    private cdRef: ChangeDetectorRef  // Inject ChangeDetectorRef
+    private snackBar: MatSnackBar,
+    private cdRef: ChangeDetectorRef,
+    private saleService: SaleService
   ) {
-    const currentDate = new Date().toISOString().split('T')[0];
+    
 
     this.saleForm = this.fb.group({
-      customer: ['', Validators.required],
-      totalAmount: [0, [Validators.required, Validators.min(0)]],
-      branch: ['', Validators.required],
-      date: [currentDate], // Set current date as default
-      isCancelled: [false],
+      customer: ['', Validators.required],      
+      branch: ['', Validators.required],         
       items: this.fb.array([]),
     });
   }
@@ -56,13 +59,11 @@ export class CreateSaleComponent {
     return this.saleForm.get('items') as FormArray;
   }
 
-  // Add Sale Item to FormArray after Save Item modal
   addSaleItem(): void {
     const dialogRef = this.dialog.open(SaleItemModalComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // Add Sale Item to FormArray
+      if (result) {       
         const itemFormGroup = this.fb.group({
           product: [result.product, Validators.required],
           quantity: [result.quantity, [Validators.required, Validators.min(1)]],
@@ -70,20 +71,21 @@ export class CreateSaleComponent {
           discount: [result.discount, [Validators.min(0)]]
         });
 
-        this.items.push(itemFormGroup); // Add the new item to the items array
-        this.updateTotalAmount(); // Update the total amount whenever a new item is added
+        this.items.push(itemFormGroup); 
+        this.updateTotalAmount(); 
 
-        this.cdRef.markForCheck(); // Manually trigger change detection to update the table
+        //this.cdRef.markForCheck();
       }
+      return false;
     });
   }
 
   removeSaleItem(item: any): void {
     const index = this.items.controls.indexOf(item);
     if (index >= 0) {
-      this.items.removeAt(index); // Remove the item from the FormArray
-      this.updateTotalAmount(); // Update the total amount after item removal
-      this.cdRef.markForCheck(); // Trigger change detection to update the table
+      this.items.removeAt(index); 
+      this.updateTotalAmount(); 
+      this.cdRef.markForCheck();
     }
   }
 
@@ -94,16 +96,36 @@ export class CreateSaleComponent {
       return sum + amount;
     }, 0);
 
-    this.saleForm.patchValue({ totalAmount: total }); // Update the total amount in the form
+    this.saleForm.patchValue({ totalAmount: total }); 
   }
 
   onSubmit(): void {
     if (this.saleForm.valid) {
-      console.log(this.saleForm.value); // Submit sale
+      const sale = this.saleForm.value;
+
+      this.saleService.createSale(sale).subscribe({
+        next: () => {
+          this.saleForm.reset();
+          this.showNotification("Sale saved successfully!", "success");
+        },
+        error: (err) => {
+          console.error("Error saving sale:", err);
+          this.showNotification("Failed to save sale. Please try again.", "error");
+        }
+      });
     }
   }
 
   onCancel(): void {
     console.log("Sale creation cancelled.");
+  }
+
+  showNotification(message: string, type: "success" | "error"): void {
+    this.snackBar.open(message, "Close", {
+      duration: 5000, 
+      panelClass: type === "success" ? "snackbar-success" : "snackbar-error",
+      horizontalPosition: "right",
+      verticalPosition: "top",
+    });
   }
 }

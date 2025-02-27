@@ -1,16 +1,29 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import axios from 'axios';
+import { Observable, from } from 'rxjs';
 import { Sale } from '../models/Sale';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SaleService {
-  private apiUrl = 'your-api-endpoint';
-  constructor(private http: HttpClient) { }
+  private apiUrl = environment.apiUrl;
 
-  createSale(sale: Sale): Observable<Sale> {
-    return this.http.post<Sale>(`${this.apiUrl}/sales`, sale);
+  createSale(sale: any): Observable<any> {
+    debugger;
+    return from(axios.post(`${this.apiUrl}/sales`, sale));
+  }
+
+  listSales(): Observable<any> {
+    return from(axios.get(`${this.apiUrl}/sales`));
+  }
+
+  updateSale(sale: Sale): Observable<any> {
+    return from(axios.put(`${this.apiUrl}/sales`, sale));
+  }
+
+  cancelSale(): Observable<any> {
+    return from(axios.delete(`${this.apiUrl}/sales`));
   }
 }

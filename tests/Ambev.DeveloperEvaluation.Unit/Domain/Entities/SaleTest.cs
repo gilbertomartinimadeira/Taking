@@ -11,9 +11,9 @@ public class SaleTests
         // Arrange
         var saleId = Guid.NewGuid();
         var items = new List<SaleItem>
-        {                       
-            new SaleItem(saleId, "Product A", 2, 10m),                       
-            new SaleItem(saleId, "Product B", 4, 5m)
+        {
+            new(saleId, "Product A", 2, 10m),
+            new(saleId, "Product B", 4, 5m)
         };
 
         // Act
@@ -32,7 +32,6 @@ public class SaleTests
         // Arrange
         var sale = new Sale("Gilberto", "Test", new List<SaleItem>());
         var saleId = Guid.NewGuid();
-        
         var item = new SaleItem(saleId, "Product A", 21, 10m);
 
         // Act & Assert
@@ -46,17 +45,14 @@ public class SaleTests
         var sale = new Sale("Gilberto", "Test", new List<SaleItem>());
         var saleId = Guid.NewGuid();
 
-        
         var item1 = new SaleItem(saleId, "Product A", 10, 10m);
         sale.AddItem(item1);
         Assert.Equal(80m, item1.Total);
 
-        
         var item2 = new SaleItem(saleId, "Product B", 4, 10m);
         sale.AddItem(item2);
         Assert.Equal(36m, item2.Total);
 
-        
         Assert.Equal(80m + 36m, sale.TotalAmount);
     }
 
@@ -79,14 +75,13 @@ public class SaleTests
     {
         // Arrange
         var saleId = Guid.NewGuid();
-        
+
         var initialItems = new List<SaleItem>
         {
             new SaleItem(saleId, "Product A", 2, 10m)
         };
         var sale = new Sale("Gilberto", "Test", initialItems);
 
-       
         var newItems = new List<SaleItem>
         {
             new SaleItem(saleId, "Product B", 4, 5m)
@@ -96,9 +91,7 @@ public class SaleTests
         sale.Update(null, null, newItems);
 
         // Assert
-       
         Assert.Equal(2, sale.Items.Count);
-       
         Assert.Equal(38m, sale.TotalAmount);
     }
 }

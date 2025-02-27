@@ -6,5 +6,7 @@ export interface Sale {
   totalAmount: number;
   branch: string;
   isCancelled: boolean;
-  items: SaleItem[]; 
+  items: SaleItem[];
 }
+
+

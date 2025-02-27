@@ -39,7 +39,7 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
         {
             Success = true,
             Message = "Sale created successfully",
-            Data = mapper.Map<CreateSaleResponse>(response)
+            Data = new CreateSaleResponse() { Id = response.Id }
         });
     }
     [HttpGet("{id:Guid}")]
@@ -79,9 +79,10 @@ public class SalesController(IMediator mediator, IMapper mapper) : BaseControlle
         return NoContent();
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> CancelSale([FromBody]CancelSaleRequest request, CancellationToken cancellationToken)
+    [HttpDelete("{id:Guid}")]
+    public async Task<ActionResult> CancelSale(Guid id, CancellationToken cancellationToken)
     {
+        var request = new CancelSaleRequest() { Id = id };
         var validator = new CancelSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 

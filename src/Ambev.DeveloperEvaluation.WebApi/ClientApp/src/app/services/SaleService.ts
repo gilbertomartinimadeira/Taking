@@ -23,7 +23,7 @@ export class SaleService {
     return from(axios.put(`${this.apiUrl}/sales`, sale));
   }
 
-  cancelSale(): Observable<any> {
-    return from(axios.delete(`${this.apiUrl}/sales`));
+  cancelSale(id: string): Observable<any> {
+    return from(axios.delete(`${this.apiUrl}/sales/${id}`));
   }
 }

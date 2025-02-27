@@ -11,6 +11,7 @@ public class ListSalesRequestProfile : Profile
     public ListSalesRequestProfile()
     {
         CreateMap<ListSalesRequest, ListSalesQuery>();
-        CreateMap<Sale, SaleDTO>();
+        CreateMap<Sale, SaleDTO>();       
+        CreateMap<SaleItem, SaleItemDTO>();
     }
 }

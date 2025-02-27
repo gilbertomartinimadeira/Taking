@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.Application.Interfaces;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Events.Sales;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application;
 
 public class CreateSaleHandlerTests
 {
-    private readonly DefaultContext _context;
+    private readonly ISaleRepository _saleRepository = Substitute.For<ISaleRepository>();
     private readonly IEventPublisher _eventPublisher = Substitute.For<IEventPublisher>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly CreateSaleHandler _handler;
@@ -24,14 +25,14 @@ public class CreateSaleHandlerTests
             .UseInMemoryDatabase(databaseName: "TestDb")
             .Options;
 
-        _context = new DefaultContext(options);
+        
 
         _eventPublisher = Substitute.For<IEventPublisher>();
         var config = new MapperConfiguration(cfg => cfg.CreateMap<SaleItemDTO, SaleItem>());
 
         _mapper = config.CreateMapper();
 
-        _handler = new CreateSaleHandler(_context, _eventPublisher, _mapper);
+        _handler = new CreateSaleHandler(_saleRepository, _eventPublisher, _mapper);
     }
 
     [Fact]

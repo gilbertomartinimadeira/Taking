@@ -47,7 +47,6 @@ export class CreateSaleComponent {
     private saleService: SaleService
   ) {
     
-
     this.saleForm = this.fb.group({
       customer: ['', Validators.required],      
       branch: ['', Validators.required],         
@@ -67,14 +66,11 @@ export class CreateSaleComponent {
         const itemFormGroup = this.fb.group({
           product: [result.product, Validators.required],
           quantity: [result.quantity, [Validators.required, Validators.min(1)]],
-          unitPrice: [result.unitPrice, [Validators.required, Validators.min(0)]],
-          discount: [result.discount, [Validators.min(0)]]
+          unitPrice: [result.unitPrice, [Validators.required, Validators.min(0)]],         
         });
 
-        this.items.push(itemFormGroup); 
-        this.updateTotalAmount(); 
-
-        //this.cdRef.markForCheck();
+        this.items.push(itemFormGroup);
+        this.updateTotalAmount();        
       }
       return false;
     });
@@ -104,9 +100,12 @@ export class CreateSaleComponent {
       const sale = this.saleForm.value;
 
       this.saleService.createSale(sale).subscribe({
-        next: () => {
+        next: () => {         
           this.saleForm.reset();
+
           this.showNotification("Sale saved successfully!", "success");
+          debugger;
+          this.saleForm.errors && console.log(this.saleForm.errors);
         },
         error: (err) => {
           console.error("Error saving sale:", err);
@@ -125,7 +124,7 @@ export class CreateSaleComponent {
       duration: 5000, 
       panelClass: type === "success" ? "snackbar-success" : "snackbar-error",
       horizontalPosition: "right",
-      verticalPosition: "top",
+      verticalPosition: "bottom",
     });
   }
 }

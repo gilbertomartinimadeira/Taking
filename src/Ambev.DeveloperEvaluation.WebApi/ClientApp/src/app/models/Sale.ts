@@ -7,6 +7,7 @@ export interface Sale {
   branch: string;
   isCancelled: boolean;
   items: SaleItem[];
+  isEditing: boolean;
 }
 
 

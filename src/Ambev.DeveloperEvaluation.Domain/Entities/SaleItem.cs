@@ -1,6 +1,7 @@
 ﻿namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class SaleItem
 {
+    public int ExternalId { get; set; }
     public Guid Id { get; private set; }
     public Guid SaleId { get; private set; }  
     public Sale Sale { get; private set; }   

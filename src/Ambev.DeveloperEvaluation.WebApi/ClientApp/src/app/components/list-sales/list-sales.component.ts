@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon'; // For icons like delete
 import { MatCardModule } from '@angular/material/card';
 import { SaleService } from '../../services/SaleService';
 import { Sale } from '../../models/Sale';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import SaleListItem from '../../models/SaleListItem';
 
 @Component({
@@ -16,14 +17,17 @@ import SaleListItem from '../../models/SaleListItem';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatSnackBarModule
   ],
   templateUrl: './list-sales.component.html',
   styleUrls: ['./list-sales.component.scss']
 })
-export class ListSalesComponent implements OnInit{ 
-  sales : SaleListItem[] = []; 
-  constructor(private saleService: SaleService) {
+export class ListSalesComponent implements OnInit{
+
+  sales: SaleListItem[] = [];
+  originalSales: { [key: number]: SaleListItem } = {}; // Store original values for canceling
+  constructor(private saleService: SaleService, private snackBar: MatSnackBar) {
     const currentDate = new Date().toISOString().split('T')[0];
   }
 
@@ -38,8 +42,24 @@ export class ListSalesComponent implements OnInit{
     
     console.log('Delete sale:', sale);
     debugger;
-    this.sales = this.sales.filter(s => s.id !== sale.id);
+    
+    
+    this.saleService.cancelSale(sale.id).subscribe(result => {
+      this.showNotification("Sale removed successfully!", "success");
+      this.sales = this.sales.filter(s => s.id !== sale.id);
+    });
+  }
 
-    //todo: call cancelSale endpoint and filter out the sale cancelled on callback
+  editSale(sale: Sale): void {
+    console.log(sale);
+  }
+
+  showNotification(message: string, type: "success" | "error"): void {
+    this.snackBar.open(message, "Close", {
+      duration: 5000,
+      panelClass: type === "success" ? "snackbar-success" : "snackbar-error",
+      horizontalPosition: "right",
+      verticalPosition: "bottom",
+    });
   }
 }

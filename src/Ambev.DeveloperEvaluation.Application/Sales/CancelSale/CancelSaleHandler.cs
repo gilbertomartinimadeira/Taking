@@ -1,30 +1,26 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Interfaces;
 using Ambev.DeveloperEvaluation.Domain.Events.Sales;
-using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 {
-    public class CancelSaleCommandHandler : IRequestHandler<CancelSaleCommand, bool>
+    public class CancelSaleCommandHandler(ISaleRepository repository, IEventPublisher eventPublisher) : IRequestHandler<CancelSaleCommand, bool>
     {
-        private readonly DefaultContext _context;
-        private readonly IEventPublisher _eventPublisher;
-
-        public CancelSaleCommandHandler(DefaultContext context, IEventPublisher eventPublisher)
+        public async Task<bool> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
         {
-            _context = context;
-            _eventPublisher = eventPublisher;
-        }
-
-        public async Task<bool> Handle(CancelSaleCommand request, CancellationToken cancellationToken)
-        {
-            var sale = await _context.Sales.FindAsync(request.SaleId) ?? throw new Exception("Sale not found");
-
-            sale.Cancel();
-
-            await _context.SaveChangesAsync(cancellationToken);
-            _eventPublisher.Publish(new SaleCancelledEvent(sale));
-
+            try
+            {              
+                var sale = await repository.GetSale(command.Id) ?? throw new Exception("Sale not found");
+                await repository.DeleteSale(command.Id);
+                await eventPublisher.Publish(new SaleCancelledEvent(sale));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+                        
             return true;
         }
     }

@@ -2,6 +2,7 @@
 {
     public class Sale
     {
+        public int ExternalId { get; set; }
         public Guid Id { get; private set; }
         public DateTime Date { get; private set; }
         public string Customer { get; private set; }
@@ -12,7 +13,9 @@
 
         public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
 
-        private Sale() { } // Required for EF Core
+        private Sale() 
+        {
+        } // Required for EF Core
 
         public Sale(string customer, string branch, IEnumerable<SaleItem> items)
         {

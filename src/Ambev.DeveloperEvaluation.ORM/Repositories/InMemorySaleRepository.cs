@@ -5,9 +5,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 public class InMemorySaleRepository : ISaleRepository
 {
-    private readonly List<Sale> _sales;
+    private static readonly List<Sale> _sales;
 
-    public InMemorySaleRepository()
+    static InMemorySaleRepository()
     {
         _sales = new List<Sale>
         {
@@ -35,7 +35,7 @@ public class InMemorySaleRepository : ISaleRepository
 
     public Task<IEnumerable<Sale>> GetAll()
     {
-        return Task.FromResult(_sales.AsEnumerable());
+        return Task.FromResult(_sales.Where(s => !s.IsCancelled).AsEnumerable());
     }
     public Task<Sale?> GetSale(Guid id)
     {
@@ -52,6 +52,7 @@ public class InMemorySaleRepository : ISaleRepository
     public Task UpdateSale(Guid id, Sale sale)
     {
         var existingSale = _sales.FirstOrDefault(s => s.Id == id);
+
         if (existingSale != null)
         {
             existingSale = new Sale(sale.Customer, sale.Branch, sale.Items);
@@ -63,10 +64,9 @@ public class InMemorySaleRepository : ISaleRepository
     public Task DeleteSale(Guid id)
     {
         var sale = _sales.FirstOrDefault(s => s.Id == id);
-        if (sale != null)
-        {
-            _sales.Remove(sale);
-        }
+       
+        sale?.Cancel();
+
         return Task.CompletedTask;
     }
 

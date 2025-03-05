@@ -11,5 +11,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
         public string? Branch { get; set; }
 
         public IEnumerable<SaleItemDTO> Items { get; set; } = [];
+        public SaleDTO Sale { get; set; }
     }
 }

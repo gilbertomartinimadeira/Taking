@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Application.DTOs;
-using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
@@ -44,16 +43,14 @@ public class SalesControllerTests
         };
         _mediator.Send(query, cancellationToken).Returns(Task.FromResult(domainResult));
 
-        
         var response = new GetSaleResponse
         {
             Sale = new SaleDTO() { Customer = request.Customer, Branch = request.Branch, Date = DateTime.Now }
-            
         };
         _mapper.Map<GetSaleResponse>(domainResult).Returns(response);
 
         // Act
-        var actionResult = await _controller.GetSaleById(request, cancellationToken);
+        var actionResult = await _controller.GetSaleById(request.Id, cancellationToken);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult);
@@ -65,11 +62,7 @@ public class SalesControllerTests
     {
         // Arrange
         var cancellationToken = CancellationToken.None;
-        var invalidRequest = new GetSaleRequest
-        {
-            Customer = "",
-            Branch = "Test"
-        };
+        var invalidRequest = Guid.Empty;
 
         // Act
         var actionResult = await _controller.GetSaleById(invalidRequest, cancellationToken);
@@ -102,7 +95,7 @@ public class SalesControllerTests
        _mapper.Map<GetSaleResponse>(domainResult).Returns((GetSaleResponse)null);
 
         // Act
-        var actionResult = await _controller.GetSaleById(request, cancellationToken);
+        var actionResult = await _controller.GetSaleById(request.Id, cancellationToken);
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult);
